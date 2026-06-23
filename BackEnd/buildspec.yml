@@ -1,26 +1,32 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       java: corretto17
+
   pre_build:
     commands:
-      - echo "Prepare backend build"
+      - echo "Check source root"
       - pwd
       - ls -al
-      - chmod +x gradlew
+      - ls -al BackEnd
+      - chmod +x BackEnd/gradlew
+
   build:
     commands:
       - echo "Build Spring Boot backend"
-      - ./gradlew clean build -x test
+      - cd BackEnd && ./gradlew clean build -x test
       - echo "Build Completed."
+
   post_build:
     commands:
       - echo "Prepare deployment files"
       - mkdir -p build-output
-      - cp build/libs/*.jar build-output/
-      - cp appspec.yml build-output/
-      - cp -r deploy-scripts build-output/
+      - cp BackEnd/build/libs/*.jar build-output/
+      - cp BackEnd/appspec.yml build-output/
+      - cp -r BackEnd/deploy-scripts build-output/
+
 artifacts:
   base-directory: build-output
   files:
