@@ -1,21 +1,32 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
-      nodejs: 20
-    commands:
-      - npm install -g @angular/cli@17
+      java: corretto17
+
   pre_build:
     commands:
-      - npm install
+      - echo "Move to BackEnd folder"
+      - cd BackEnd
+      - chmod +x gradlew
+
   build:
     commands:
-      - ng build -c production
+      - echo "Build Spring Boot backend"
+      - cd BackEnd
+      - ./gradlew clean build -x test
       - echo "Build Completed."
-    finally:
-      - echo This is the finally block execution!
+
+  post_build:
+    commands:
+      - echo "Prepare deployment files"
+      - mkdir -p build-output
+      - cp BackEnd/build/libs/*.jar build-output/
+      - cp BackEnd/appspec.yml build-output/
+      - cp -r BackEnd/deploy-scripts build-output/
+
 artifacts:
+  base-directory: build-output
   files:
-    - 'dist/my-angular-project/**/*'
-    - appspec.yml
-    - 'deploy-scripts/**/*'
+    - '**/*'
