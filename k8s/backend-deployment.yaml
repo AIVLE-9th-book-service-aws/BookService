@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookapp-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookapp-backend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: bookapp-backend
+    spec:
+      containers:
+        - name: bookapp-backend
+          image: image: BACKEND_IMAGE_URI_PLACEHOLDER
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
