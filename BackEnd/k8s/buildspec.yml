@@ -7,6 +7,7 @@ phases:
       nodejs: 20
   pre_build:
     commands:
+      - echo "=== pre_build 시작 ==="
       - cd FrontEnd/frontend && npm install && cd ../../
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 879772956301.dkr.ecr.us-east-1.amazonaws.com
       - aws eks update-kubeconfig --region us-east-1 --name $ACCOUNT-cluster
@@ -19,10 +20,11 @@ phases:
   post_build:
     commands:
       - docker push 879772956301.dkr.ecr.us-east-1.amazonaws.com/team18-dev5-backend:latest
+      - aws s3 sync $CODEBUILD_SRC_DIR/FrontEnd/frontend/dist s3://team18-dev5-website --delete
       - kubectl apply -f BackEnd/k8s/
-      - echo Build completed on `date`
 
 artifacts:
   files:
+    - BackEnd/build/libs/*.jar
     - FrontEnd/frontend/dist/**/*
-  discard-paths: yes
+  discard-paths: no
