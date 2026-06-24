@@ -3,7 +3,6 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17
       nodejs: 20
   pre_build:
     commands:
@@ -14,22 +13,14 @@ phases:
       - echo "=== npm install 완료 ==="
   build:
     commands:
-      - echo "=== frontend build 시작 ==="
       - cd FrontEnd/frontend && npm run build && cd ../../
-      - echo "=== frontend build 완료 ==="
-      - echo "=== backend build 시작 ==="
-      - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test
-      - echo "=== backend build 완료 ==="
+
   post_build:
     commands:
-      - echo "=== post_build 진입 ==="
-      - aws s3 sync FrontEnd/frontend/dist s3://team18-dev5-website --delete
+
       - echo Build completed on `date`
 
 artifacts:
+  base-directory: 'FrontEnd/frontend/dist'
   files:
-    - BackEnd/build/libs/*.jar
-    - FrontEnd/frontend/dist/**/*
-    - appspec.yml
-    - scripts/**/*
-  discard-paths: no
+    - '**/*'
