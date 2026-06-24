@@ -23,6 +23,7 @@ phases:
   post_build:
     commands:
       - echo "=== post_build 진입 ==="
+      - aws s3 sync FrontEnd/frontend/dist s3://team18-dev5-website --delete
       - echo Build completed on `date`
 
 artifacts:
