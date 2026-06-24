@@ -7,14 +7,22 @@ phases:
       nodejs: 20
   pre_build:
     commands:
+      - echo "=== pre_build 시작 ==="
       - echo Build started on `date`
+      - echo "=== npm install 시작 ==="
       - cd FrontEnd/frontend && npm install && cd ../../
+      - echo "=== npm install 완료 ==="
   build:
     commands:
+      - echo "=== frontend build 시작 ==="
       - cd FrontEnd/frontend && npm run build && cd ../../
+      - echo "=== frontend build 완료 ==="
+      - echo "=== backend build 시작 ==="
       - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test
+      - echo "=== backend build 완료 ==="
   post_build:
     commands:
+      - echo "=== post_build 진입 ==="
       - echo Build completed on `date`
 
 artifacts:
