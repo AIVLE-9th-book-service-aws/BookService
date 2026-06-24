@@ -1,0 +1,22 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "1. kubectl 도구 설치 단계"
+      - curl -LO "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"
+      - chmod +x ./kubectl
+      - mv ./kubectl /usr/local/bin/
+  pre_build:
+    commands:
+      - echo "2. Amazon EKS 클러스터 접속 권한 갱신"
+      # ★ user133 ~ EKS 클러스터 이름으로 변경해야함
+      - aws eks update-kubeconfig --region us-east-1 --name user133-eks-cluster
+  build:
+    commands:
+      - echo "3. 새 통합 레포지토리 경로로 이동하여 진짜 배포 시작"
+      - cd BackEnd
+      - kubectl apply -f deployment.yaml
+      - kubectl apply -f service.yaml
+artifacts:
+  files:
+    - '**/*'

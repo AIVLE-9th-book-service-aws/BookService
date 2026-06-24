@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user133-backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user133-backend
+  template:
+    metadata:
+      labels:
+        app: user133-backend
+    spec:
+      containers:
+      - name: backend-container
+        # ★ 조원분들의 가이드에 맞춘 ECR 이미지 주소 영역입니다.
+        image: 111111111111.dkr.ecr.us-east-1.amazonaws.com/user133-backend:latest
+        ports:
+        - containerPort: 8080
