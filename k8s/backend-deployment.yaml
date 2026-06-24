@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: bookapp-backend
-          image: image: BACKEND_IMAGE_URI_PLACEHOLDER
+          image: BACKEND_IMAGE_URI_PLACEHOLDER
           ports:
             - containerPort: 8080
           env:
