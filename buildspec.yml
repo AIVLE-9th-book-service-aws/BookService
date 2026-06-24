@@ -13,10 +13,7 @@ phases:
   build:
     commands:
       - cd FrontEnd/frontend && npm run build && cd ../../
-      - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test
-      - ls -la build/libs/
-      - docker build -t team18-dev5-backend -f Dockerfile .
-      - cd ..
+      - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test && docker build -t team18-dev5-backend -f Dockerfile . && cd ..
       - docker tag team18-dev5-backend:latest 879772956301.dkr.ecr.us-east-1.amazonaws.com/team18-dev5-backend:latest
   post_build:
     commands:
