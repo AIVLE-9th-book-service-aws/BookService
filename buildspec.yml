@@ -3,24 +3,24 @@ version: 0.2
 phases:
   install:
     runtime-versions:
+      java: corretto17
       nodejs: 20
   pre_build:
     commands:
-      - echo "=== pre_build 시작 ==="
       - echo Build started on `date`
-      - echo "=== npm install 시작 ==="
       - cd FrontEnd/frontend && npm install && cd ../../
-      - echo "=== npm install 완료 ==="
   build:
     commands:
       - cd FrontEnd/frontend && npm run build && cd ../../
-
+      - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test
   post_build:
     commands:
-
       - echo Build completed on `date`
 
 artifacts:
-  base-directory: 'FrontEnd/frontend/dist'
   files:
-    - '**/*'
+    - BackEnd/build/libs/*.jar
+    - FrontEnd/frontend/dist/**/*
+    - appspec.yml
+    - scripts/**/*
+  discard-paths: yes
