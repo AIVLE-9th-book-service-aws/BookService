@@ -30,6 +30,12 @@ phases:
       - echo Building backend Docker image
       - docker build -t $BACKEND_ECR_URI:$IMAGE_TAG ./BackEnd
 
+      - echo Building frontend static files
+      - cd FrontEnd/frontend
+      - npm install
+      - npm run build
+      - cd ../..
+
       - echo Building frontend Docker image
       - docker build -t $FRONTEND_ECR_URI:$IMAGE_TAG ./FrontEnd/frontend
 
