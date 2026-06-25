@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DeletedBookCard from '../components/DeletedBookCard';
 
-const bookUrl = '/api/books';
-
+import { BASE_URL } from '../utils/api'
+const bookUrl = `${BASE_URL}/books`
 async function parseResponse(res, fallbackMessage) {
   if (!res.ok) throw new Error(fallbackMessage);
   if (res.status === 204) return null;

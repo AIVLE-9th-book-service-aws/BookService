@@ -59,7 +59,6 @@ function BookFinder() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const bookUrl = '/api/books/search';
 
   useEffect(() => {
     let cancelled = false;

@@ -5,7 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis,
     CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-
+import { BASE_URL } from '../utils/api'
 
 function BookChart() {
     const [books, setBooks] = useState([]);
@@ -22,9 +22,9 @@ function BookChart() {
     const [countData, setCountData] = useState({});
     const [likesData, setLikesData] = useState({});
 
-    const bookUrl = '/api/books';
-    const bookCountUrl = '/api/books/statistics/count';
-    const likesCountUrl = '/api/books/statistics/likes';
+    const bookUrl = `${BASE_URL}/books`
+    const bookCountUrl = `${BASE_URL}/books/statistics/count`
+    const likesCountUrl = `${BASE_URL}/books/statistics/likes`
 
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [2025, 2026, 2027, 2028];

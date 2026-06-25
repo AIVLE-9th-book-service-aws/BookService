@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
+import { BASE_URL } from '../utils/api'
 
 function Login() {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ function Login() {
         setError('');
 
         const isAdmin = !form.email.includes('@');
-        const url = isAdmin ? '/api/admin/login' : '/api/members/login';
+        const url = isAdmin ? `${BASE_URL}/admin/login` : `${BASE_URL}/members/login`;
         const body = isAdmin
             ? { username: form.email, password: form.password }
             : { email: form.email, password: form.password };

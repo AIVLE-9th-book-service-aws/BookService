@@ -3,14 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import noCover from '../img/no-cover.svg';
 import { GENRE_LIST, TAG_LIST } from "../bookOption";
 import { useAuth } from '../context/useAuth';
+import { BASE_URL } from '../utils/api'
 
 function BookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('accessToken');
   const { user } = useAuth();
-  const bookUrl = '/api/books';
-  const commentUrl = '/api/comments';
+  const bookUrl = `${BASE_URL}/books`
+  const commentUrl = `${BASE_URL}/comments`
 
   const [book, setBook] = useState(null);
   const [bookLoading, setBookLoading] = useState(true);
@@ -35,7 +36,7 @@ function BookDetail() {
     if (!token) return;
     const fetchLoginUser = async () => {
       try {
-        const res = await fetch('/api/members/me', {
+        const res = await fetch(`${BASE_URL}/members/me`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) return;
@@ -93,7 +94,7 @@ function BookDetail() {
     if (user?.isAdmin) {
       if (!window.confirm(`"${book.title}"을(를) 영구 삭제할까요?`)) return;
       try {
-        const res = await fetch(`/api/admin/books/${id}`, {
+        const res = await fetch(`${BASE_URL}/admin/books/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -123,7 +124,7 @@ function BookDetail() {
 
   const handleSubmitUpdate = async () => {
     try {
-      const patchUrl = user?.isAdmin ? `/api/admin/books/${id}` : `${bookUrl}/${id}`;
+      const patchUrl = user?.isAdmin ? `${BASE_URL}/admin/books/${id}` : `${bookUrl}/${id}`;
       const res = await fetch(patchUrl, {
         method: 'PATCH',
         headers: {
@@ -196,7 +197,7 @@ function BookDetail() {
 
   const handleCommentDelete = async (commentId, password) => {
     try {
-      const deleteUrl = user?.isAdmin ? `/api/admin/comments/${commentId}` : `${commentUrl}/${commentId}`;
+      const deleteUrl = user?.isAdmin ? `${BASE_URL}/admin/comments/${commentId}` : `${commentUrl}/${commentId}`;
       const res = await fetch(deleteUrl, {
         method: 'DELETE',
         headers: {
@@ -218,7 +219,7 @@ function BookDetail() {
       await handleCommentDelete(pwPrompt.id, pwPrompt.pw);
     } else {
       try {
-        const patchUrl = user?.isAdmin ? `/api/admin/comments/${pwPrompt.id}` : `${commentUrl}/${pwPrompt.id}`;
+        const patchUrl = user?.isAdmin ? `${BASE_URL}/admin/comments/${pwPrompt.id}` : `${commentUrl}/${pwPrompt.id}`;
         const res = await fetch(patchUrl, {
           method: 'PATCH',
           headers: {

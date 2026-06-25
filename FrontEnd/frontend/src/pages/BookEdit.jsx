@@ -4,7 +4,7 @@ import { GENRE_LIST, TAG_LIST } from "../bookOption";
 import { useAuth } from '../context/useAuth';
 import './BookEdit.css';
 
-const BASE_URL = '/api';
+import { BASE_URL } from '../utils/api'
 
 function BookEdit() {
   const { id } = useParams();
@@ -66,7 +66,7 @@ function BookEdit() {
     }
     setSaving(true);
     try {
-      const endpoint = user?.isAdmin ? `/api/admin/books/${id}` : `${BASE_URL}/books/${id}`;
+      const endpoint = user?.isAdmin ? `${BASE_URL}/admin/books/${id}` : `${BASE_URL}/books/${id}`;
       const method = 'PATCH';
       const res = await fetch(endpoint, {
         method,

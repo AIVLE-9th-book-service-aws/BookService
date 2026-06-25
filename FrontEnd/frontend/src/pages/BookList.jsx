@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import noCover from '../img/no-cover.svg';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import { BASE_URL } from '../utils/api'
 
 const BOOKS_PER_PAGE = 4;
 
@@ -142,7 +143,7 @@ function BookList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const bookUrl = '/api/books';
+  const bookUrl = `${BASE_URL}/books`
   const token = localStorage.getItem('accessToken');
 
   useEffect(() => {

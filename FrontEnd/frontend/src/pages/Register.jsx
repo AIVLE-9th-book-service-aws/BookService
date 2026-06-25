@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../utils/api'
 
 const domainOptions = ['gmail.com', 'naver.com', 'kakao.com', 'daum.net', 'outlook.com', '직접입력'];
 
@@ -53,7 +54,7 @@ function Register() {
         }
 
         try {
-            const res = await fetch('/api/members/signup', {
+            const res = await fetch(`${BASE_URL}/members/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

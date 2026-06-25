@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import noCover from '../img/no-cover.svg';
+import { BASE_URL } from '../utils/api'
 
 function MyPage() {
     const navigate = useNavigate();
@@ -22,10 +23,10 @@ function MyPage() {
         const fetchData = async () => {
             try {
                 const [infoRes, booksRes] = await Promise.all([
-                    fetch('/api/members/me', {
+                    fetch(`${BASE_URL}/members/me`, {
                         headers: { 'Authorization': `Bearer ${token}` },
                     }),
-                    fetch('/api/books/my', {
+                    fetch(`${BASE_URL}/books/my`, {
                         headers: { 'Authorization': `Bearer ${token}` },
                     }),
                 ]);
