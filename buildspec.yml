@@ -1,26 +1,56 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-east-1
+    BACKEND_ECR_URI: 879772956301.dkr.ecr.us-east-1.amazonaws.com/team18-backend
+    FRONTEND_ECR_URI: 879772956301.dkr.ecr.us-east-1.amazonaws.com/team18-frontend
+    IMAGE_TAG: latest
+
 phases:
   install:
     runtime-versions:
       java: corretto17
       nodejs: 20
+
   pre_build:
     commands:
       - echo Build started on `date`
-      - cd FrontEnd/frontend && npm install && cd ../../
+      - echo Logging in to Amazon ECR
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 879772956301.dkr.ecr.us-east-1.amazonaws.com
+
   build:
     commands:
-      - cd FrontEnd/frontend && npm run build && cd ../../
-      - cd BackEnd && chmod +x ./gradlew && ./gradlew clean build -x test
+      - echo Building backend jar
+      - cd BackEnd
+      - chmod +x ./gradlew
+      - ./gradlew clean build -x test
+      - cd ..
+
+      - echo Building backend Docker image
+      - docker build -t $BACKEND_ECR_URI:$IMAGE_TAG ./BackEnd
+
+      - echo Building frontend static files
+      - cd FrontEnd/frontend
+      - npm install
+      - npm run build
+      - cd ../..
+
+      - echo Building frontend Docker image
+      - docker build -t $FRONTEND_ECR_URI:$IMAGE_TAG ./FrontEnd/frontend
+
+      - echo Pushing Docker images
+      - docker push $BACKEND_ECR_URI:$IMAGE_TAG
+      - docker push $FRONTEND_ECR_URI:$IMAGE_TAG
+
   post_build:
     commands:
+      - echo Replacing image placeholders
+      - sed -i "s|BACKEND_IMAGE_URI_PLACEHOLDER|$BACKEND_ECR_URI:$IMAGE_TAG|g" k8s/backend-deployment.yaml
+      - sed -i "s|FRONTEND_IMAGE_URI_PLACEHOLDER|$FRONTEND_ECR_URI:$IMAGE_TAG|g" k8s/frontend-deployment.yaml
       - echo Build completed on `date`
 
 artifacts:
   files:
-    - BackEnd/build/libs/*.jar
-    - FrontEnd/frontend/dist/**/*
-    - appspec.yml
-    - scripts/**/*
+    - k8s/**/*
   discard-paths: no

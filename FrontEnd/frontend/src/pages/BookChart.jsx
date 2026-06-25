@@ -6,6 +6,8 @@ import {
     CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
+import { apiFetch } from '../components/api/apiClient';
+
 
 function BookChart() {
     const [books, setBooks] = useState([]);
@@ -19,12 +21,14 @@ function BookChart() {
     // Chart
     const [bookCountType, setBookCountType] = useState('genre');
     const [likesCountType, setLikesCountType] = useState('genre');
-    const [countData, setCountData] = useState({});
-    const [likesData, setLikesData] = useState({});
-
-    const bookUrl = '/api/books';
-    const bookCountUrl = '/api/books/statistics/count';
-    const likesCountUrl = '/api/books/statistics/likes';
+    const [countData, setCountData] = useState({
+        genre: {},
+        tag: {},
+    });
+    const [likesData, setLikesData] = useState({
+        genre: {},
+        tag: {},
+    });
 
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [2025, 2026, 2027, 2028];
@@ -35,32 +39,40 @@ function BookChart() {
         const fetchData = async () => {
             try {
                 setStatsLoading(true);
+                setStatsError(null);
 
-                const [bookRes, countRes, likesRes] = await Promise.all([
-                    fetch(bookUrl),
-                    fetch(bookCountUrl),
-                    fetch(likesCountUrl),
+                const [
+                    bookList,
+                    genreCountStats,
+                    tagCountStats,
+                    genreLikesStats,
+                    tagLikesStats,
+                ] = await Promise.all([
+                    apiFetch('/books'),
+                    apiFetch('/books/statistics/count?type=genre'),
+                    apiFetch('/books/statistics/count?type=tag'),
+                    apiFetch('/books/statistics/likes?type=genre'),
+                    apiFetch('/books/statistics/likes?type=tag'),
                 ]);
 
-                if (!bookRes.ok || !countRes.ok || !likesRes.ok) {
-                    throw new Error('서버 연결 실패');
-                }
-
-                const [bookList, countStats, likesStats] = await Promise.all([
-                    bookRes.json(),
-                    countRes.json(),
-                    likesRes.json(),
-                ]);
-
-                const activeBooks = bookList.filter((book) => !book.deletedAt);
+                const activeBooks = Array.isArray(bookList)
+                    ? bookList.filter((book) => !book.deletedAt)
+                    : [];
 
                 setBooks(activeBooks);
-                setCountData(countStats);
-                setLikesData(likesStats);
-                setStatsError(null);
+
+                setCountData({
+                    genre: genreCountStats || {},
+                    tag: tagCountStats || {},
+                });
+
+                setLikesData({
+                    genre: genreLikesStats || {},
+                    tag: tagLikesStats || {},
+                });
             } catch (err) {
                 console.error('통계 데이터 불러오기 실패:', err);
-                setStatsError('통계 데이터를 불러오지 못했습니다.');
+                setStatsError(err.message || '통계 데이터를 불러오지 못했습니다.');
             } finally {
                 setStatsLoading(false);
             }
@@ -77,16 +89,13 @@ function BookChart() {
         return `${year}-${month}-${day}`;
     };
 
-    const getTags = (tag) => {
-        if (Array.isArray(tag)) return tag;
-        if (typeof tag === 'string' && tag.trim()) return tag.split(',');
-        return [];
-    };
-
     const makeChartData = (data, type) => {
         const selectedData = data[type] || {};
 
-        return Object.entries(selectedData).map(([name, value]) => ({name, value: Number(value) || 0,}));
+        return Object.entries(selectedData).map(([name, value]) => ({
+            name,
+            value: Number(value) || 0,
+        }));
     };
 
     const selectedMonthKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
@@ -107,13 +116,19 @@ function BookChart() {
                 return book.createdAt?.slice(0, 10) === dateKey;
             }).length;
 
-            return {day, count,};
+            return {
+                day,
+                count,
+            };
         });
     }, [selectedYear, selectedMonth, selectedMonthKey, selectedMonthBooks]);
 
     const todayKey = getDateKey(new Date());
+
     const totalCount = books.length;
+
     const monthlyCount = selectedMonthBooks.length;
+
     const todayCount = books.filter((book) => {
         return book.createdAt?.slice(0, 10) === todayKey;
     }).length;
@@ -154,7 +169,7 @@ function BookChart() {
                             className={selectedType === 'genre' ? 'active' : ''}
                             onClick={() => setSelectedType('genre')}
                         >
-                        장르
+                            장르
                         </button>
 
                         <button
@@ -162,7 +177,7 @@ function BookChart() {
                             className={selectedType === 'tag' ? 'active' : ''}
                             onClick={() => setSelectedType('tag')}
                         >
-                        태그
+                            태그
                         </button>
                     </div>
                 </div>
@@ -291,7 +306,6 @@ function BookChart() {
                 </section>
             </div>
 
-
             <div className="stats-section">
                 {statsLoading && (
                     <p className="stats-message">
@@ -334,7 +348,6 @@ function BookChart() {
         </>
     );
 }
-
 
 export default BookChart;
 
